@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  #Database
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
+  #Identity
+  identity-api:
+    image: ${DOCKER_REGISTRY-}identityapi
+    build:
+      context: .
+      dockerfile: ./Server/Services/Identity/Identity.API/Dockerfile
+    depends_on:
+      - sqldata
+
+  #PurchaseList
+  purchaseList-api:
+    image: ${DOCKER_REGISTRY-}purchaselistapi
+    build:
+      context: .
+      dockerfile: ./Server/Services/PurchaseList/PurchaseList.API/Dockerfile
+    depends_on:
+      - sqldata
