@@ -44,7 +44,7 @@ jobs:
       with:
        working-directory: ./src
        context: ./
-       file: ${{env.ROOT_PATH}}/Identity/Identity.API/Dockerfile
+       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/my-list:identity-api-v${{ env.GITHUB_RUN_ID }}
 
@@ -54,7 +54,7 @@ jobs:
       with:
        working-directory: ./src
        context: ./
-       file: ${{env.ROOT_PATH}}/PurchaseList/PurchaseList.API/Dockerfile
+       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/my-list:purchase-list-api-v${{ env.GITHUB_RUN_ID }}
 
