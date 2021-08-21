@@ -38,17 +38,19 @@ jobs:
       run: docker-compose up -d --build
       working-directory: ./src
 
-    - name: Build and push Identity Service
+    - name: Push Identity Service
       id: docker_build_identity_service
       uses: docker/build-push-action@v2
       with:
+       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/my-list:identity-api-v${{ env.GITHUB_RUN_ID }}
 
-    - name: Build and push PurchaseList Service
+    - name: PurchaseList Service
       id: docker_build_puchase_list_service
       uses: docker/build-push-action@v2
       with:
+       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/my-list:purchase-list-api-v${{ env.GITHUB_RUN_ID }}
 
