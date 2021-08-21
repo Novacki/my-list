@@ -6,15 +6,16 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+ENV ROOT_PATH=./Server/Services/PurchaseList/PurchaseList.API
 WORKDIR /src
-COPY ["Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj", "Server/Services/PurchaseList/PurchaseList.API/"]
-RUN dotnet restore "Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj"
+COPY ["./", "${ROOT_PATH}/"]
+RUN dotnet restore "${ROOT_PATH}/PurchaseList.API.csproj"
 COPY . .
-WORKDIR "/src/Server/Services/PurchaseList/PurchaseList.API"
-RUN dotnet build "PurchaseList.API.csproj" -c Release -o /app/build
+WORKDIR /src
+RUN dotnet build "${ROOT_PATH}/PurchaseList.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PurchaseList.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "${ROOT_PATH}/PurchaseList.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
