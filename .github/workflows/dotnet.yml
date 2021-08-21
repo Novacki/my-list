@@ -38,10 +38,6 @@ jobs:
       #run: docker-compose up -d --build
       #working-directory: ./src
 
-    - name: Ending Services 
-      run: docker-compose down
-      working-directory: ./src
-
     - name: Build and push Identity Service
       id: docker_build_identity_service
       uses: docker/build-push-action@v2
