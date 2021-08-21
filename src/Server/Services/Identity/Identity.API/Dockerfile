@@ -6,15 +6,17 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+ENV ROOT_PATH=./Server/Services/Identity/Identity.API
 WORKDIR /src
-COPY ["Server/Services/Identity/Identity.API/Identity.API.csproj", "Server/Services/Identity/Identity.API/"]
-RUN dotnet restore "Server/Services/Identity/Identity.API/Identity.API.csproj"
+COPY ["./", "${ROOT_PATH}/"]
+RUN dotnet restore "${ROOT_PATH}/Identity.API.csproj"
+
 COPY . .
-WORKDIR "/src/Server/Services/Identity/Identity.API"
-RUN dotnet build "Identity.API.csproj" -c Release -o /app/build
+WORKDIR /src
+RUN dotnet build "${ROOT_PATH}/Identity.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Identity.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "${ROOT_PATH}/Identity.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
