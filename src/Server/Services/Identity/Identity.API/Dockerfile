@@ -8,12 +8,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 ENV ROOT_PATH=./Server/Services/Identity/Identity.API
-WORKDIR /app/src
+WORKDIR /src
 COPY ["./", "${ROOT_PATH}/"]
 RUN dotnet restore "${ROOT_PATH}/Identity.API.csproj"
 
 COPY . .
-WORKDIR /app/src
+WORKDIR /src
 RUN dotnet build "${ROOT_PATH}/Identity.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
