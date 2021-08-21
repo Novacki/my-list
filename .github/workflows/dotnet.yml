@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env: 
-      ROOT_PATH: ./src/Server/Services/
+      ROOT_PATH: ./Server/Services/
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
