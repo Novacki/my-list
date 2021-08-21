@@ -49,7 +49,7 @@ jobs:
        context: ./
        file: ${{env.ROOT_PATH}}/Identity/Identity.API/Dockerfile
        push: true
-       tags: ${{ secrets.DOCKER_USER }}/identity-api:${{ env.GITHUB_RUN_ID }}
+       tags: ${{ secrets.DOCKER_USER }}/my-list:identity-api-v${{ env.GITHUB_RUN_ID }}
 
     - name: Build and push PurchaseList Service
       id: docker_build_puchase_list_service
@@ -58,7 +58,7 @@ jobs:
        context: ./
        file: ${{env.ROOT_PATH}}/PurchaseList/PurchaseList.API/Dockerfile
        push: true
-       tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:${{ env.GITHUB_RUN_ID }}
+       tags: ${{ secrets.DOCKER_USER }}/my-list:purchase-list-api-v${{ env.GITHUB_RUN_ID }}
 
     - name: Dotnet Tests
       run: dotnet test MyList.sln --no-build --verbosity normal
