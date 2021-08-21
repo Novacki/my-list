@@ -43,22 +43,22 @@ jobs:
       working-directory: ./src
 
     - name: Build and push Identity Service
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ${{env.ROOT_PATH}}/Identity/Identity.API/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USER }}/identity-api:${{ env.GITHUB_RUN_ID }}
+      id: docker_build_identity_service
+      uses: docker/build-push-action@v2
+      with:
+       context: ./
+       file: ${{env.ROOT_PATH}}/Identity/Identity.API/Dockerfile
+       push: true
+       tags: ${{ secrets.DOCKER_USER }}/identity-api:${{ env.GITHUB_RUN_ID }}
 
-     - name: Build and push PurchaseList Service
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ${{env.ROOT_PATH}}/PurchaseList/PurchaseList.API/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:${{ env.GITHUB_RUN_ID }}
+    - name: Build and push PurchaseList Service
+      id: docker_build_puchase_list_service
+      uses: docker/build-push-action@v2
+      with:
+       context: ./
+       file: ${{env.ROOT_PATH}}/PurchaseList/PurchaseList.API/Dockerfile
+       push: true
+       tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:${{ env.GITHUB_RUN_ID }}
 
     - name: Dotnet Tests
       run: dotnet test MyList.sln --no-build --verbosity normal
