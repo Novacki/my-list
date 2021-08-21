@@ -37,7 +37,7 @@ jobs:
       run: docker-compose up -d --build
       working-directory: ./src
 
-     -name: Finish 
+    - name: Finish 
       run: docker-compose down
       working-directory: ./src
 
