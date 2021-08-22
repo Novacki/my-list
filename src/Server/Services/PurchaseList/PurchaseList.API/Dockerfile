@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj", "Server/Services/PurchaseList/PurchaseList.API/"]
-RUN dotnet restore "Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj"
+COPY ["src/Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj", "src/Server/Services/PurchaseList/PurchaseList.API/"]
+RUN dotnet restore "src/Server/Services/PurchaseList/PurchaseList.API/PurchaseList.API.csproj"
 COPY . .
-WORKDIR "/src/Server/Services/PurchaseList/PurchaseList.API"
+WORKDIR "/src/src/Server/Services/PurchaseList/PurchaseList.API"
 RUN dotnet build "PurchaseList.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
