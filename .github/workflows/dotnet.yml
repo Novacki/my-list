@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         no_push: ${{ github.event_name == 'push' }}
-
+        
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
@@ -46,14 +46,7 @@ jobs:
       with:
        file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
-       tags: ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}
-       
-    - name: Push Identity latest
-      uses: docker/build-push-action@v2
-      with:
-       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
-       push: true
-       tags: ${{ secrets.DOCKER_USER }}/identity-api:latest
+       tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
        
     - name: Push PurchaseList Service
       id: docker_build_puchase_list_service
@@ -61,15 +54,8 @@ jobs:
       with:
        push: true
        file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-       tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
+       tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
        
-    - name: Push PurchaseList latest
-      uses: docker/build-push-action@v2
-      with:
-       push: true
-       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-       tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
- 
     - name: Dotnet Tests
       run: dotnet test MyList.sln --no-build --verbosity normal
       working-directory: ./src
