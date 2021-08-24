@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Tests", "Server\Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.Tests", "Server\Tests\Unit\PurchaseList\PurchaseList.Tests\PurchaseList.Tests.csproj", "{47ACC52B-7921-4E67-BE75-D4BB601E7202}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{6E1AF3D5-418F-4194-9F21-F3BE71C54F99}"
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "Docker\docker-compose.dcproj", "{6E1AF3D5-418F-4194-9F21-F3BE71C54F99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
