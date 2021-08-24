@@ -30,6 +30,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        no_push: ${{ github.event_name == 'push' }}
 
     - name: Set up Docker Buildx
       id: buildx
