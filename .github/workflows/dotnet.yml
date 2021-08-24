@@ -46,7 +46,7 @@ jobs:
        file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/identity-api:latest
-        - ${{ secrets.DOCKER_USER }}/identity-api-v${{ github.run_id }}
+       tags: ${{ secrets.DOCKER_USER }}/identity-api-v${{ github.run_id }}
 
     - name: Push PurchaseList Service
       id: docker_build_puchase_list_service
@@ -55,7 +55,7 @@ jobs:
        file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
-        - ${{ secrets.DOCKER_USER }}/purchase-list-api-v${{ github.run_id }}
+       tags: ${{ secrets.DOCKER_USER }}/purchase-list-api-v${{ github.run_id }}
     
     - name: Dotnet Tests
       run: dotnet test MyList.sln --no-build --verbosity normal
