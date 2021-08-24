@@ -35,21 +35,22 @@ jobs:
       id: buildx
       uses: docker/setup-buildx-action@v1
 
-   # - name: Build Services
-    #  run: docker-compose build
-    #  working-directory: ./src
-
+    - name: Build Services
+      run: docker-compose build
+      working-directory: ./src/Docker/
 
     - name: Push Identity Service
       id: docker_build_identity_service
       uses: docker/build-push-action@v2
       with:
+       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}
        
     - name: Push Identity latest
       uses: docker/build-push-action@v2
       with:
+       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: ${{ secrets.DOCKER_USER }}/identity-api:latest
        
@@ -58,12 +59,14 @@ jobs:
       uses: docker/build-push-action@v2
       with:
        push: true
+       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
        
     - name: Push PurchaseList latest
       uses: docker/build-push-action@v2
       with:
        push: true
+       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        tags: ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
  
     - name: Dotnet Tests
