@@ -5,12 +5,10 @@ on:
     branches: 
      - master 
      - develop
-     - feature/configure-ci-docker
    pull_request:
     branches: 
      - master 
      - develop
-     - feature/configure-ci-docker
 
 jobs:
   build:
