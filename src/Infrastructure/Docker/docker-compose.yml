@@ -9,7 +9,7 @@ services:
   identity-api:
     image: ${DOCKER_REGISTRY-}identityapi
     build:
-      context: ./../../
+      context: ./../../../
       dockerfile: ./src/Server/Services/Identity/Identity.API/Dockerfile
     depends_on:
       - sqldata
@@ -18,7 +18,7 @@ services:
   purchaseList-api:
     image: ${DOCKER_REGISTRY-}purchaselistapi
     build:
-      context: ./../../
+      context: ./../../../
       dockerfile: ./src/Server/Services/PurchaseList/PurchaseList.API/Dockerfile
     depends_on:
       - sqldata
