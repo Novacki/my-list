@@ -14,7 +14,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            return Ok(new { value = "deploy" });
+            return Ok(new { value = "Será que funciona o Deploy?" });
         }
     }
 }
