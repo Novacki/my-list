@@ -55,11 +55,11 @@ jobs:
         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
     - name: Set Namespace AKS
-    - run: |
+      run: |
         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
     - name: Adding Manifests of the ks8
-    - uses: Azure/k8s-deploy@v1.4
+      uses: Azure/k8s-deploy@v1.4
       with:
         namespace: ${{ env.AKS_NAMESPACE }}
         manifests: |
@@ -69,7 +69,6 @@ jobs:
             ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
             ${{ secrets.DOCKER_USER }}/identity-api:latest
         kubectl-version: 'latest'
-
+        
     - name: Set Deployment Image
-      run: |
-        kubectl set image deployment identity-api identity-api=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
+      run: kubectl set image deployment identity-api identity-api=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
