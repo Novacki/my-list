@@ -5,7 +5,6 @@ on:
     branches: 
      - master 
      - develop
-     - feature/create-cd
    pull_request:
     branches: 
      - master 
@@ -67,7 +66,7 @@ jobs:
             ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
             ./src/Infrastructure/K8S/Identity/identity-api-service.yml
         images: |
-            {{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
+            ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
             ${{ secrets.DOCKER_USER }}/identity-api:latest
         kubectl-version: 'latest'
 
