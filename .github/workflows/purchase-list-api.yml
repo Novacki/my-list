@@ -55,18 +55,11 @@ jobs:
         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
+    - name: Set Namespace AKS
     - run: |
         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
-    # - uses: azure/k8s-create-secret@v1
-    #   with:
-    #     container-registry-url: ${{ env.DOCKER_USER }}
-    #     container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-    #     container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-    #     secret-name: ${{ env.SECRET }}
-    #     namespace: ${{ env.NAMESPACE }}
-    #     force: true
-
+    - name: Adding Manifests of the ks8 
     - uses: Azure/k8s-deploy@v1.4
       with:
         namespace: ${{ env.AKS_NAMESPACE }}
@@ -77,3 +70,6 @@ jobs:
             ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} 
             ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
         kubectl-version: 'latest'
+
+     - name: Set Deployment Image
+       run: kubectl set image deployment identity-api identity-api=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
