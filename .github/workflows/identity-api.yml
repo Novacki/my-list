@@ -5,7 +5,7 @@ on:
     branches: 
      - master 
      - develop
-     
+     - feature/create-cd
    pull_request:
     branches: 
      - master 
@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       ROOT_PATH: ./src/Server/Services/
+      AKS_NAMESPACE: my-list-application
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -54,9 +55,12 @@ jobs:
         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
+    - run: |
+        kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
     - uses: Azure/k8s-deploy@v1.4
       with:
-        namespace: default
+        namespace: ${{ env.NAMESPACE }}
         manifests: |
             ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
             ./src/Infrastructure/K8S/Identity/identity-api-service.yml
