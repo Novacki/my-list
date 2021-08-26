@@ -56,7 +56,7 @@ jobs:
         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
     - run: |
-        kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
+        kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
     # - uses: azure/k8s-create-secret@v1
     #   with:
@@ -69,7 +69,7 @@ jobs:
 
     - uses: Azure/k8s-deploy@v1.4
       with:
-        namespace: ${{ env.NAMESPACE }}
+        namespace: ${{ env.AKS_NAMESPACE }}
         manifests: |
             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
