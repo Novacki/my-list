@@ -5,7 +5,6 @@ on:
     branches: 
      - master 
      - develop
-
    pull_request:
     branches: 
      - master 
@@ -17,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       ROOT_PATH: ./src/Server/Services/
+      AKS_NAMESPACE: my-list-application
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -54,9 +54,14 @@ jobs:
         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
-    - uses: Azure/k8s-deploy@v1.4
+    - name: Set Namespace AKS
+      run: |
+        kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+    - name: Adding Manifests of the ks8 
+      uses: Azure/k8s-deploy@v1.4
       with:
-        namespace: default
+        namespace: ${{ env.AKS_NAMESPACE }}
         manifests: |
             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
@@ -64,3 +69,6 @@ jobs:
             ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} 
             ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
         kubectl-version: 'latest'
+        
+    - name: Set Deployment Image
+      run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
