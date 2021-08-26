@@ -72,4 +72,5 @@ jobs:
         kubectl-version: 'latest'
         
     - name: Set Deployment Image
-      run: kubectl set image deployment identity-api identity-api=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
+      run: | 
+        kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
