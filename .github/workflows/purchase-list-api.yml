@@ -70,4 +70,3 @@ jobs:
             ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
         kubectl-version: 'latest'
         
-    - run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
