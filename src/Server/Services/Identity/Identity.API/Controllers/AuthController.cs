@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace Identity.API.Controllers
 {
+
+    [ApiController]
+    [Route("api/v1/[controller]")]
     public class AuthController : Controller
     {
+        [HttpGet]
         public async Task<IActionResult> Register()
         {
-            return Ok();
+            return Ok(new { value = "deploy" });
         }
     }
 }
