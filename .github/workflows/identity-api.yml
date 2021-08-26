@@ -59,8 +59,8 @@ jobs:
       with:
         namespace: default
         manifests: |
-            ./../../src/Infrastructure/K8S/Identity/identity-api-deployment.yml
-            ./../../src/Infrastructure/K8S/Identity/identity-api-service.yml
+            ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
+            ./src/Infrastructure/K8S/Identity/identity-api-service.yml
         images: |
             {{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
             ${{ secrets.DOCKER_USER }}/identity-api:latest
