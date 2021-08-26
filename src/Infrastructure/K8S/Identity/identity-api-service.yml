@@ -4,7 +4,7 @@ metadata:
   name: identity-api-service
 spec:
   selector:
-    app: identity-api
+    app: identity
   type: LoadBalancer
   ports:
   - protocol: TCP
