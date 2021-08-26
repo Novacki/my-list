@@ -1,4 +1,4 @@
-name: .NET CI
+name: Identity-API CI
 
 on:
    push:
@@ -49,3 +49,19 @@ jobs:
        push: true
        tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
        
+    - uses: Azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+        resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+    - uses: Azure/k8s-deploy@v1.4
+      with:
+        namespace: default
+        manifests: |
+            ./../../src/Infrastructure/K8S/Identity/identity-api-deployment.yml
+            ./../../src/Infrastructure/K8S/Identity/identity-api-service.yml
+        images: |
+            {{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
+            ${{ secrets.DOCKER_USER }}/identity-api:latest
+        kubectl-version: 'latest'
