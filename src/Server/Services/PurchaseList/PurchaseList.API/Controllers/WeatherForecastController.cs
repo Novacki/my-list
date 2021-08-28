@@ -13,7 +13,7 @@ namespace PurchaseList.API.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Mais um", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Meu... Funcionou"
+            "Freezing", "Bracing", "Mais um", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Meu11... Funcionou"
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
