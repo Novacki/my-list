@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity-api
+  name: identity
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: identity-api
+      app: identity
   template:
     metadata:
       labels:
-        app: identity-api
+        app: identity
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
       containers:
-      - name: identity-api
+      - name: identity
         image: novackinando/identity-api:latest
         env:
         - name: ASPNETCORE_ENVIRONMENT
@@ -31,4 +31,4 @@ spec:
             memory: 256Mi
         ports:
         - containerPort: 80
-          name: identity-api
+          name: identity
