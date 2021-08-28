@@ -5,7 +5,6 @@ on:
     branches: 
      - master 
      - develop
-     - feature/create-cd
    pull_request:
     branches: 
      - master 
@@ -20,10 +19,6 @@ jobs:
       AKS_NAMESPACE: my-list-application
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
 
     - name: Login to Docker Hub
       uses: docker/login-action@v1
@@ -36,7 +31,14 @@ jobs:
       id: buildx
       uses: docker/setup-buildx-action@v1
 
-
+    - name: Run Identity Tests
+      id: docker_build_identity_tests
+      uses: docker/build-push-action@v2
+      with:
+       context: ./
+       file: ${{env.ROOT_PATH}}../Tests/Unit/Identity/Identity.Tests/Dockerfile
+       push: false
+       
     - name: Push Identity Service
       id: docker_build_identity_service
       uses: docker/build-push-action@v2
@@ -45,11 +47,7 @@ jobs:
        file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
        push: true
        tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
-       
-    - name: Dotnet Tests
-      run: dotnet test MyList.sln --no-build --verbosity normal
-      working-directory: ./src
-      
+        
     - uses: Azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
