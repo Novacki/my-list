@@ -49,7 +49,8 @@ jobs:
        file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
        
-    - uses: Azure/aks-set-context@v1
+    - name: Azure Authentication
+      uses: Azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
@@ -72,4 +73,4 @@ jobs:
         kubectl-version: 'latest'
         
     - name: Set Deployment Image
-      run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}
+      run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:latest
