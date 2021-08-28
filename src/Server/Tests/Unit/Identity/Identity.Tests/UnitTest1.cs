@@ -1,14 +1,14 @@
 using System;
 using Xunit;
 
-namespace PurchaseList.Tests
+namespace Identity.Tests
 {
     public class UnitTest1
     {
         [Fact]
         public void Test1()
         {
-
+            Assert.Equal(false, true);
         }
     }
 }

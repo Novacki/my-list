@@ -5,6 +5,7 @@ on:
     branches: 
      - master 
      - develop
+     - feature/create-cd
    pull_request:
     branches: 
      - master 
@@ -35,9 +36,6 @@ jobs:
       id: buildx
       uses: docker/setup-buildx-action@v1
 
-    - name: Dotnet Tests
-      run: dotnet test MyList.sln --no-build --verbosity normal
-      working-directory: ./src
 
     - name: Push Identity Service
       id: docker_build_identity_service
@@ -48,6 +46,10 @@ jobs:
        push: true
        tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
        
+    - name: Dotnet Tests
+      run: dotnet test MyList.sln --no-build --verbosity normal
+      working-directory: ./src
+      
     - uses: Azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
@@ -70,5 +72,5 @@ jobs:
             ${{ secrets.DOCKER_USER }}/identity-api:latest
         kubectl-version: 'latest'
         
-    #- name: Set Deployment Image
-      #run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
+    - name: Set Deployment Image
+      run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
