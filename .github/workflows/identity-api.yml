@@ -73,4 +73,4 @@ jobs:
         kubectl-version: 'latest'
         
     - name: Set Deployment Image
-      run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:latest
+      run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
