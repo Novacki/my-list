@@ -13,7 +13,7 @@ namespace PurchaseList.API.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-            "Deploy Teste"
+            "Deploy Teste 2"
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
