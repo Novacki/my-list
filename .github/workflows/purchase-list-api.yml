@@ -48,7 +48,7 @@ jobs:
        file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        
   deploy-dev:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.base_ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -106,7 +106,7 @@ jobs:
        run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
 
   deploy-hmg:
-    if: ${{ github.ref == 'refs/heads/hmg' }}
+    if: ${{ github.base_ref == 'refs/heads/hmg' }}
     runs-on: ubuntu-latest
     environment:
       name: hmg
