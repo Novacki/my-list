@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       ROOT_PATH: ./src/Server/Services/
-      AKS_NAMESPACE: my-list-application
     steps:
     - name: Git Checkout
       uses: actions/checkout@v2
@@ -56,7 +55,7 @@ jobs:
       name: dev
     needs: build
     env: 
-      ROOT_PATH: ./src/Server/Services/
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
     steps:
      - name: Git Checkout
        uses: actions/checkout@v2
@@ -70,12 +69,12 @@ jobs:
 
      - name: Set Namespace AKS
        run: |
-         kubectl create namespace ${{ secrets.AZURE_AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
      - name: Adding Manifests of the ks8 
        uses: Azure/k8s-deploy@v1.4
        with:
-         namespace: ${{ secrets.AZURE_AKS_NAMESPACE }}
+         namespace: ${{ env.AKS_NAMESPACE }}
          manifests: |
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
@@ -85,15 +84,14 @@ jobs:
          kubectl-version: 'latest'
 
      - name: Set Deployment Image
-       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ secrets.AZURE_AKS_NAMESPACE }}
+       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
 
   deploy-hmg:
     runs-on: ubuntu-latest
     environment:
       name: hmg
     env: 
-      AKS_NAMESPACE: hmg
-      ROOT_PATH: ./src/Server/Services/
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
     needs: deploy-dev
     steps:
      - name: Git Checkout
@@ -108,7 +106,7 @@ jobs:
 
      - name: Set Namespace AKS
        run: |
-         kubectl create namespace ${{ secrets.AZURE_AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
      - name: Adding Manifests of the ks8 
        uses: Azure/k8s-deploy@v1.4
