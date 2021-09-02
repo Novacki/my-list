@@ -58,6 +58,9 @@ jobs:
     env: 
       ROOT_PATH: ./src/Server/Services/
     steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+      
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
        with:
@@ -74,8 +77,8 @@ jobs:
        with:
          namespace: ${{ secrets.AZURE_AKS_NAMESPACE }}
          manifests: |
-             ./../../src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
-             ./../../src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
          images: |
              ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} 
              ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
@@ -93,6 +96,9 @@ jobs:
       ROOT_PATH: ./src/Server/Services/
     needs: deploy-dev
     steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+       
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
        with:
