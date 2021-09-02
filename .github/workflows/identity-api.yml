@@ -54,6 +54,7 @@ jobs:
       name: dev
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
     needs: build
     steps:
      - name: Git Checkout
@@ -98,8 +99,8 @@ jobs:
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/identity-api:latest
+             ${{ secrets.DOCKER_USER }}/dev-identity-api:v${{ github.run_id }} 
+             ${{ secrets.DOCKER_USER }}/dev-identity-api:latest
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
@@ -113,6 +114,7 @@ jobs:
       name: hmg
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
     needs: build
     steps:
      - name: Git Checkout
@@ -157,8 +159,8 @@ jobs:
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/identity-api:latest
+             ${{ secrets.DOCKER_USER }}/hmg-identity-api:v${{ github.run_id }} 
+             ${{ secrets.DOCKER_USER }}/hmg-identity-api:latest
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
