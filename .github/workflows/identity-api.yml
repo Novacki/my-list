@@ -88,6 +88,7 @@ jobs:
 
   
   deploy-hmg:
+    if: ${{ github.ref == 'release/*' }}
     runs-on: ubuntu-latest
     environment:
       name: hmg
