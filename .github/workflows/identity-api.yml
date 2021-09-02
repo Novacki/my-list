@@ -40,17 +40,17 @@ jobs:
        file: ${{env.ROOT_PATH}}../Tests/Unit/Identity/Identity.Tests/Dockerfile
        push: false
        
-    - name: Push Identity Service
+    - name: Build Identity Service
       id: docker_run_identity_service
       uses: docker/build-push-action@v2
       with:
        context: ./
        file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
-       push: true
+       push: false
        tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
         
   deploy-dev:
-    if: ${{ github.ref == 'feature/*' }}
+    if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -60,7 +60,27 @@ jobs:
     steps:
      - name: Git Checkout
        uses: actions/checkout@v2
-       
+    
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          no_push: ${{ github.event_name == 'push' }}
+
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
+
+     - name: Push Identity Service
+       id: docker_run_identity_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
+         push: true
+         tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
+
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
        with:
@@ -89,13 +109,13 @@ jobs:
 
   
   deploy-hmg:
-    if: ${{ github.ref == 'release/*' }}
+    if: ${{ github.ref == 'refs/heads/hmg' }}
     runs-on: ubuntu-latest
     environment:
       name: hmg
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
-    needs: deploy-dev
+    needs: build
     steps:
      - name: Git Checkout
        uses: actions/checkout@v2
