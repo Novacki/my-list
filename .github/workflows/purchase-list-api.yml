@@ -55,6 +55,8 @@ jobs:
     environment:
       name: dev
     needs: build
+    env: 
+      AKS_NAMESPACE: dev
     steps:
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -70,7 +72,7 @@ jobs:
      - name: Adding Manifests of the ks8 
        uses: Azure/k8s-deploy@v1.4
        with:
-         namespace: ${{ secrets.AZURE_AKS_NAMESPACE }}
+         namespace: ${{ env.AKS_NAMESPACE }}
          manifests: |
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
@@ -86,6 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: hmg
+    env: 
+      AKS_NAMESPACE: hmg
     needs: deploy-dev
     steps:
      - name: Azure Authentication
@@ -102,7 +106,7 @@ jobs:
      - name: Adding Manifests of the ks8 
        uses: Azure/k8s-deploy@v1.4
        with:
-         namespace: ${{ secrets.AZURE_AKS_NAMESPACE }}
+         namespace: ${{ env.AKS_NAMESPACE }}
          manifests: |
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
@@ -112,4 +116,4 @@ jobs:
          kubectl-version: 'latest'
 
      - name: Set Deployment Image
-       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ secrets.AZURE_AKS_NAMESPACE }}
+       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
