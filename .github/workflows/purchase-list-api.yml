@@ -68,18 +68,18 @@ jobs:
          password: ${{ secrets.DOCKER_PASSWORD }}
          no_push: ${{ github.event_name == 'push' }}
 
-    - name: Set up Docker Buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v1
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
 
      - name: Push PurchaseList Service
        id: docker_build_puchase_list_service
        uses: docker/build-push-action@v2
        with:
-       context: ./
-       push: true
-       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-       tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
+         context: ./
+         push: true
+         file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
+         tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
    
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
