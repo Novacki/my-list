@@ -49,6 +49,7 @@ jobs:
        file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
        tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
        
+    - run: echo ${{ github.ref }}
   deploy-dev:
     if: ${{ github.ref == 'feature/*' }}
     runs-on: ubuntu-latest
