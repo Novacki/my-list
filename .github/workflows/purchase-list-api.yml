@@ -5,10 +5,14 @@ on:
     branches: 
      - master 
      - develop
+     - hmg
+     - release/**
    pull_request:
     branches: 
      - master 
      - develop
+     - hmg
+     - release/**
      
 jobs:
   build:
