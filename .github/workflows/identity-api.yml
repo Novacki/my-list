@@ -51,6 +51,7 @@ jobs:
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
     needs: build
     steps:
      - name: Git Checkout
@@ -74,7 +75,7 @@ jobs:
          context: ./
          file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
          push: true
-         tags: "${{ secrets.DOCKER_USER }}/dev-identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/dev-identity-api:latest" 
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
 
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -95,12 +96,12 @@ jobs:
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/dev-identity-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/dev-identity-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
-       run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
 
   
   deploy-hmg:
@@ -111,6 +112,7 @@ jobs:
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
     needs: build
     steps:
      - name: Git Checkout
@@ -134,7 +136,7 @@ jobs:
          context: ./
          file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
          push: true
-         tags: "${{ secrets.DOCKER_USER }}/hmg-identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/hmg-identity-api:latest" 
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest"  
 
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -155,21 +157,22 @@ jobs:
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/hmg-identity-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/hmg-identity-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
-       run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
-  
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}  
+
   deploy-prod:
-    if: ${{ github.base_ref == 'prod' }}
+    if: ${{ github.base_ref == 'master' }}
     runs-on: ubuntu-latest
     environment:
       name: prod
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
     needs: build
     steps:
      - name: Git Checkout
@@ -193,7 +196,7 @@ jobs:
          context: ./
          file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
          push: true
-         tags: "${{ secrets.DOCKER_USER }}/hmg-identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/hmg-identity-api:latest" 
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest"  
 
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -214,9 +217,9 @@ jobs:
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/hmg-identity-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/hmg-identity-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
-       run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }} 
