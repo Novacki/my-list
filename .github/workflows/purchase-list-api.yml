@@ -5,10 +5,14 @@ on:
     branches: 
      - master 
      - develop
+     - hmg
+     - release/**
    pull_request:
     branches: 
      - master 
      - develop
+     - hmg
+     - release/**
      
 jobs:
   build:
@@ -16,22 +20,23 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       ROOT_PATH: ./src/Server/Services/
-      AKS_NAMESPACE: my-list-application
     steps:
     - name: Git Checkout
       uses: actions/checkout@v2
-
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        no_push: ${{ github.event_name == 'push' }}
 
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
 
+
+    - name: Build PurchaseList Service
+      id: docker_build_puchase_list_service
+      uses: docker/build-push-action@v2
+      with:
+       context: ./
+       push: false
+       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
+       
     - name: Run Identity Tests
       id: docker_run_puchase_list_tests
       uses: docker/build-push-action@v2
@@ -40,37 +45,182 @@ jobs:
        file: ${{env.ROOT_PATH}}../Tests/Unit/PurchaseList/PurchaseList.Tests/Dockerfile
        push: false
 
-    - name: Push PurchaseList Service
-      id: docker_build_puchase_list_service
-      uses: docker/build-push-action@v2
-      with:
-       context: ./
-       push: true
-       file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-       tags: "${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/purchase-list-api:latest"
+  deploy-dev:
+    if: ${{ github.base_ref == 'develop' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    needs: build
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+      
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+         username: ${{ secrets.DOCKER_USER }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+         no_push: ${{ github.event_name == 'push' }}
+
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
+
+     - name: Push PurchaseList Service
+       id: docker_build_puchase_list_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         push: true
+         file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8 
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
+
+     - name: Set Deployment Image
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+
+  deploy-hmg:
+    if: ${{ github.base_ref == 'hmg' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: hmg
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
+    needs: build
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
        
-    - name: Azure Authentication
-      uses: Azure/aks-set-context@v1
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
-        resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+         username: ${{ secrets.DOCKER_USER }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+         no_push: ${{ github.event_name == 'push' }}
 
-    - name: Set Namespace AKS
-      run: |
-        kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
 
-    - name: Adding Manifests of the ks8 
-      uses: Azure/k8s-deploy@v1.4
-      with:
-        namespace: ${{ env.AKS_NAMESPACE }}
-        manifests: |
-            ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
-            ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
-        images: |
-            ${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} 
-            ${{ secrets.DOCKER_USER }}/purchase-list-api:latest
-        kubectl-version: 'latest'
-        
-    - name: Set Deployment Image
-      run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+     - name: Push PurchaseList Service
+       id: docker_build_puchase_list_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         push: true
+         file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8 
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
+
+     - name: Set Deployment Image
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+
+  deploy-prod:
+    if: ${{ github.base_ref == 'master' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
+    needs: build
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+       
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+         username: ${{ secrets.DOCKER_USER }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+         no_push: ${{ github.event_name == 'push' }}
+
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
+
+     - name: Push PurchaseList Service
+       id: docker_build_puchase_list_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         push: true
+         file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8 
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
+             ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
+
+     - name: Set Deployment Image
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}

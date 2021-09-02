@@ -5,32 +5,35 @@ on:
     branches: 
      - master 
      - develop
+     - hmg
+     - release/**
    pull_request:
     branches: 
      - master 
      - develop
-     
+     - hmg
+     - release/**
 jobs:
   build:
 
     runs-on: ubuntu-latest
     env: 
       ROOT_PATH: ./src/Server/Services/
-      AKS_NAMESPACE: my-list-application
     steps:
     - name: Git Checkout
       uses: actions/checkout@v2
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        no_push: ${{ github.event_name == 'push' }}
-
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
+
+    - name: Build Identity Service
+      id: docker_run_identity_service
+      uses: docker/build-push-action@v2
+      with:
+       context: ./
+       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
+       push: false
 
     - name: Run Identity Tests
       id: docker_build_identity_tests
@@ -40,37 +43,183 @@ jobs:
        file: ${{env.ROOT_PATH}}../Tests/Unit/Identity/Identity.Tests/Dockerfile
        push: false
        
-    - name: Push Identity Service
-      id: docker_run_identity_service
-      uses: docker/build-push-action@v2
-      with:
-       context: ./
-       file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
-       push: true
-       tags: "${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/identity-api:latest" 
-        
-    - name: Azure Authentication
-      uses: Azure/aks-set-context@v1
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
-        resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+  deploy-dev:
+    if: ${{ github.base_ref == 'develop' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
+    needs: build
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+    
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          no_push: ${{ github.event_name == 'push' }}
 
-    - name: Set Namespace AKS
-      run: |
-        kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
 
-    - name: Adding Manifests of the ks8
-      uses: Azure/k8s-deploy@v1.4
-      with:
-        namespace: ${{ env.AKS_NAMESPACE }}
-        manifests: |
-            ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
-            ./src/Infrastructure/K8S/Identity/identity-api-service.yml
-        images: |
-            ${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} 
-            ${{ secrets.DOCKER_USER }}/identity-api:latest
-        kubectl-version: 'latest'
+     - name: Push Identity Service
+       id: docker_run_identity_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
+         push: true
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
+             ./src/Infrastructure/K8S/Identity/identity-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
         
-    - name: Set Deployment Image
-      run: kubectl set image deployment identity identity=${{ secrets.DOCKER_USER }}/identity-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+     - name: Set Deployment Image
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+
+  
+  deploy-hmg:
+    if: ${{ github.base_ref == 'hmg' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: hmg
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
+    needs: build
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+       
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          no_push: ${{ github.event_name == 'push' }}
+
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
+
+     - name: Push Identity Service
+       id: docker_run_identity_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
+         push: true
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest"  
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
+             ./src/Infrastructure/K8S/Identity/identity-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
+        
+     - name: Set Deployment Image
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}  
+
+  deploy-prod:
+    if: ${{ github.base_ref == 'master' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    env: 
+      AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
+      ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-identity-api
+    needs: build
+    steps:
+     - name: Git Checkout
+       uses: actions/checkout@v2
+       
+     - name: Login to Docker Hub
+       uses: docker/login-action@v1
+       with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          no_push: ${{ github.event_name == 'push' }}
+
+     - name: Set up Docker Buildx
+       id: buildx
+       uses: docker/setup-buildx-action@v1
+
+     - name: Push Identity Service
+       id: docker_run_identity_service
+       uses: docker/build-push-action@v2
+       with:
+         context: ./
+         file: ${{env.ROOT_PATH}}Identity/Identity.API/Dockerfile
+         push: true
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest"  
+
+     - name: Azure Authentication
+       uses: Azure/aks-set-context@v1
+       with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+         cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
+         resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
+
+     - name: Set Namespace AKS
+       run: |
+         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+     - name: Adding Manifests of the ks8
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         manifests: |
+             ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
+             ./src/Infrastructure/K8S/Identity/identity-api-service.yml
+         images: |
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
+         kubectl-version: 'latest'
+        
+     - name: Set Deployment Image
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }} 
