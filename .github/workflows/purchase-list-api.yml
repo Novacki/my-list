@@ -54,6 +54,7 @@ jobs:
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
     steps:
      - name: Git Checkout
        uses: actions/checkout@v2
@@ -76,8 +77,8 @@ jobs:
          context: ./
          push: true
          file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-         tags: "${{ secrets.DOCKER_USER }}/dev-purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/dev-purchase-list-api:latest"
-   
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
+
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
        with:
@@ -97,12 +98,12 @@ jobs:
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/dev-purchase-list-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/dev-purchase-list-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
 
      - name: Set Deployment Image
-       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
 
   deploy-hmg:
     if: ${{ github.base_ref == 'hmg' }}
@@ -112,6 +113,7 @@ jobs:
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
     needs: build
     steps:
      - name: Git Checkout
@@ -135,7 +137,7 @@ jobs:
          context: ./
          push: true
          file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-         tags: "${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:latest"
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
 
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -156,21 +158,22 @@ jobs:
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
 
      - name: Set Deployment Image
-       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
 
   deploy-prod:
-    if: ${{ github.base_ref == 'prod' }}
+    if: ${{ github.base_ref == 'master' }}
     runs-on: ubuntu-latest
     environment:
       name: prod
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
       ROOT_PATH: ./src/Server/Services/
+      IMAGE_TAG_BASE: ${{ secrets.DOCKER_USER }}/${{ secrets.AZURE_AKS_NAMESPACE }}-purchase-list-api
     needs: build
     steps:
      - name: Git Checkout
@@ -194,7 +197,7 @@ jobs:
          context: ./
          push: true
          file: ${{env.ROOT_PATH}}PurchaseList/PurchaseList.API/Dockerfile
-         tags: "${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:v${{ github.run_id }}, ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:latest"
+         tags: "${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}, ${{ env.IMAGE_TAG_BASE }}:latest" 
 
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -215,9 +218,9 @@ jobs:
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-deployment.yml
              ./src/Infrastructure/K8S/PurchaseList/purchase-list-api-service.yml
          images: |
-             ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:v${{ github.run_id }} 
-             ${{ secrets.DOCKER_USER }}/hmg-purchase-list-api:latest
+             ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
+             ${{ env.IMAGE_TAG_BASE }}:latest
          kubectl-version: 'latest'
 
      - name: Set Deployment Image
-       run: kubectl set image deployment purchase purchase=${{ secrets.DOCKER_USER }}/purchase-list-api:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment purchase purchase=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
