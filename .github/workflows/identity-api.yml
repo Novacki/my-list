@@ -48,7 +48,7 @@ jobs:
        push: false
 
   deploy-dev:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.base_ref == 'develop' }}
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -107,7 +107,7 @@ jobs:
 
   
   deploy-hmg:
-    if: ${{ github.ref == 'refs/heads/hmg' }}
+    if: ${{ github.base_ref == 'hmg' }}
     runs-on: ubuntu-latest
     environment:
       name: hmg
