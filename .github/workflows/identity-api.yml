@@ -113,7 +113,7 @@ jobs:
       name: hmg
     env: 
       AKS_NAMESPACE: ${{ secrets.AZURE_AKS_NAMESPACE }}-my-list
-    needs: dev
+    needs: deploy-dev
     steps:
      - name: Git Checkout
        uses: actions/checkout@v2
