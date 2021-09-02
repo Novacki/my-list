@@ -57,6 +57,7 @@ jobs:
     needs: build
     env: 
       AKS_NAMESPACE: dev
+      ROOT_PATH: ./src/Server/Services/
     steps:
      - name: Azure Authentication
        uses: Azure/aks-set-context@v1
@@ -90,6 +91,7 @@ jobs:
       name: hmg
     env: 
       AKS_NAMESPACE: hmg
+      ROOT_PATH: ./src/Server/Services/
     needs: deploy-dev
     steps:
      - name: Azure Authentication
