@@ -17,16 +17,9 @@ spec:
         image: mcr.microsoft.com/mssql/server:2017-latest
         env:
           - name: ACCEPT_EULA
-            valueFrom:
-              secretKeyRef:
-                name: sql-server-secret 
-                key: ACCEPT_EULA
-
+            value: "Y"
           - name: SA_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: sql-server-secret 
-                key: SA_PASSWORD  
+            value: Pass@word
         resources:
           requests:
             cpu: 100m
