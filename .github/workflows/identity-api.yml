@@ -99,7 +99,7 @@ jobs:
              ./src/Infrastructure/K8S/SqlServer/sql-server-deployment.yml
              ./src/Infrastructure/K8S/SqlServer/sql-server-service.yml
              ./src/Infrastructure/K8S/SqlServer/sql-server-secret.yml
-             ./src/Infrastructure/K8S/Identity/sql-server-persistent-volume-claim.yml
+             ./src/Infrastructure/K8S/SqlServer/sql-server-persistent-volume-claim.yml
          kubectl-version: 'latest'
 
      - name: Setting Application of the ks8
@@ -170,9 +170,9 @@ jobs:
          images: mcr.microsoft.com/mssql/server:2017-latest
          manifests: |
              ./src/Infrastructure/K8S/SqlServer/sql-server-deployment.yml
-             ./src/Infrastructure/K8S/Identity/sql-server-service.yml
-             ./src/Infrastructure/K8S/Identity/sql-server-secret.yml
-             ./src/Infrastructure/K8S/Identity/sql-server-persistent-volume-claim.yml
+             ./src/Infrastructure/K8S/SqlServer/sql-server-service.yml
+             ./src/Infrastructure/K8S/SqlServer/sql-server-secret.yml
+             ./src/Infrastructure/K8S/SqlServer/sql-server-persistent-volume-claim.yml
          kubectl-version: 'latest'
 
      - name: Setting Application of the ks8
