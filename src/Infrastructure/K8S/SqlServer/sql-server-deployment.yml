@@ -27,6 +27,13 @@ spec:
               secretKeyRef:
                 name: sql-server-secret 
                 key: SA_PASSWORD  
+        volumeMounts:
+          - mountPath: "var/lib/sqlServer"
+            name: sql-server-volume
         ports:
         - containerPort: 1433
           name: sql-server
+      volumes:
+        - name: sql-server-volume
+          persistentVolumeClaim:
+            claimName: sql-server-pvc

@@ -1,0 +1,12 @@
+kind:apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sql-server-pvc
+spec:
+  storageClassName: default
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
