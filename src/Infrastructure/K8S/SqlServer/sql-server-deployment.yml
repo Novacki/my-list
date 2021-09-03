@@ -35,5 +35,5 @@ spec:
             cpu: 250m
             memory: 256Mi
         ports:
-        - containerPort: 80
+        - containerPort: 1433
           name: sql-server
