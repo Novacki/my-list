@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql-server
+  template:
+    metadata:
+      labels:
+        app: sql-server
+    spec:
+      containers:
+      - name: sql-server
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        env:
+          - name: ACCEPT_EULA
+            valueFrom:
+              secretKeyRef:
+                name: sql-server-secret 
+                key: ACCEPT_EULA
+
+          - name: SA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sql-server-secret 
+                key: SA_PASSWORD  
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 80
+          name: sql-server

@@ -7,12 +7,14 @@ on:
      - develop
      - hmg
      - release/**
+     - feature/auth
    pull_request:
     branches: 
      - master 
      - develop
      - hmg
      - release/**
+     - feature/auth
 jobs:
   build:
 
@@ -44,7 +46,7 @@ jobs:
        push: false
        
   deploy-dev:
-    if: ${{ github.base_ref == 'develop' }}
+    # if: ${{ github.base_ref == 'develop' }}
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -84,11 +86,18 @@ jobs:
          cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
          resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
-     - name: Set Namespace AKS
-       run: |
-         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+     - name: Setting Database of the ks8
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         images: mcr.microsoft.com/mssql/server:2017-latest
+         manifests: |
+             ./src/Infrastructure/K8S/SqlServer/sql-server-deployment.yml
+             ./src/Infrastructure/K8S/Identity/sql-server-service.yml
+             ./src/Infrastructure/K8S/Identity/sql-server-secret.yml
+         kubectl-version: 'latest'
 
-     - name: Adding Manifests of the ks8
+     - name: Setting Application of the ks8
        uses: Azure/k8s-deploy@v1.4
        with:
          namespace: ${{ env.AKS_NAMESPACE }}
@@ -145,11 +154,18 @@ jobs:
          cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
          resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
 
-     - name: Set Namespace AKS
-       run: |
-         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
+     - name: Setting Database of the ks8
+       uses: Azure/k8s-deploy@v1.4
+       with:
+         namespace: ${{ env.AKS_NAMESPACE }}
+         images: mcr.microsoft.com/mssql/server:2017-latest
+         manifests: |
+             ./src/Infrastructure/K8S/SqlServer/sql-server-deployment.yml
+             ./src/Infrastructure/K8S/Identity/sql-server-service.yml
+             ./src/Infrastructure/K8S/Identity/sql-server-secret.yml
+         kubectl-version: 'latest'
 
-     - name: Adding Manifests of the ks8
+     - name: Setting Application of the ks8
        uses: Azure/k8s-deploy@v1.4
        with:
          namespace: ${{ env.AKS_NAMESPACE }}
@@ -204,10 +220,6 @@ jobs:
          creds: '${{ secrets.AZURE_CREDENTIALS }}'
          cluster-name: '${{ secrets.AZURE_AKS_CLUSTER_NAME }}'
          resource-group: '${{ secrets.AZURE_RESOURCE_GROUP }}'
-
-     - name: Set Namespace AKS
-       run: |
-         kubectl create namespace ${{ env.AKS_NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
      - name: Adding Manifests of the ks8
        uses: Azure/k8s-deploy@v1.4
