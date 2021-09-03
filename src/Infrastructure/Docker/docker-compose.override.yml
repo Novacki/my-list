@@ -2,9 +2,7 @@ version: '3.4'
 
 services:
   identity-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+    env_file: ./Environments/Identity/.env
     restart: always
     ports:
       - "5570:80"
@@ -12,9 +10,7 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   purchaseList-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+    env_file: ./Environments/PurchaseList/.env
     restart: always
     ports:
       - "5580:80"
@@ -22,8 +18,6 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   sqldata:
-    environment:
-      - SA_PASSWORD=Pass@word
-      - ACCEPT_EULA=Y
+    env_file: ./Environments/SqlServer/.env
     ports:
       - "5434:1433"
