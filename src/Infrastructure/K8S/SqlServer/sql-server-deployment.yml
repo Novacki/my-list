@@ -27,13 +27,6 @@ spec:
               secretKeyRef:
                 name: sql-server-secret 
                 key: SA_PASSWORD  
-        resources:
-          requests:
-            cpu: 130m
-            memory: 500Mi
-          limits:
-            cpu: 280m
-            memory: 800Mi
         ports:
         - containerPort: 1433
           name: sql-server
