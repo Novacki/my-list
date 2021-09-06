@@ -11,7 +11,8 @@ spec:
   - host: identitytestes1
     http:
       paths:
-      - path: "/"
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: identity-api-service
