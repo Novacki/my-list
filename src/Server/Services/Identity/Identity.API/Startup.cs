@@ -1,4 +1,4 @@
-using Identity.infrastructure.Data.Contexts.Identity;
+using Identity.Infrastructure.Data.Contexts.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Identity.Services.Interfaces;
+using Identity.Services.Services;
 
 namespace Identity.API
 {
@@ -30,6 +33,15 @@ namespace Identity.API
 
             services.AddDbContext<IdentityDataContext>(options =>
               options.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+            }).AddEntityFrameworkStores<IdentityDataContext>()
+              .AddDefaultTokenProviders();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +58,7 @@ namespace Identity.API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

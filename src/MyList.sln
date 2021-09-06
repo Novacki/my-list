@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API", "Server\Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Domain", "Server\Services\Identity\Identity.Domain\Identity.Domain.csproj", "{CB407B1C-9B79-411C-8BB4-30FF36C0A0FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.infrastructure", "Server\Services\Identity\Identity.infrastructure\Identity.infrastructure.csproj", "{26AF167A-A44A-4177-A025-10CD83473BDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Infrastructure", "Server\Services\Identity\Identity.infrastructure\Identity.Infrastructure.csproj", "{26AF167A-A44A-4177-A025-10CD83473BDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.API", "Server\Services\PurchaseList\PurchaseList.API\PurchaseList.API.csproj", "{E14521BD-C44F-4AED-AF44-ACF5566DD756}"
 EndProject
@@ -35,9 +35,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.Infrastructure
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "Infrastructure\Docker\docker-compose.dcproj", "{6E1AF3D5-418F-4194-9F21-F3BE71C54F99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Tests", "Server\Tests\Unit\Identity\Identity.Tests\Identity.Tests.csproj", "{F536D952-13DA-4125-84A0-ED44EBB800AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Tests", "Server\Tests\Unit\Identity\Identity.Tests\Identity.Tests.csproj", "{F536D952-13DA-4125-84A0-ED44EBB800AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PurchaseList.Tests", "Server\Tests\Unit\PurchaseList\PurchaseList.Tests\PurchaseList.Tests.csproj", "{BFBC6D27-79E6-4833-8677-92E99C426176}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.Tests", "Server\Tests\Unit\PurchaseList\PurchaseList.Tests\PurchaseList.Tests.csproj", "{BFBC6D27-79E6-4833-8677-92E99C426176}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Service", "Server\Services\Identity\Identity.Service\Identity.Service.csproj", "{6BAA9F92-A81B-4626-9850-948A8CE288E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{BFBC6D27-79E6-4833-8677-92E99C426176}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFBC6D27-79E6-4833-8677-92E99C426176}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFBC6D27-79E6-4833-8677-92E99C426176}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BAA9F92-A81B-4626-9850-948A8CE288E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BAA9F92-A81B-4626-9850-948A8CE288E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BAA9F92-A81B-4626-9850-948A8CE288E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BAA9F92-A81B-4626-9850-948A8CE288E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{832C4865-5F80-49DD-9893-42B7B3E62EF4} = {984C409C-B9CF-4D51-B3AC-E1745F960E1C}
 		{F536D952-13DA-4125-84A0-ED44EBB800AE} = {65BED28A-CA2E-4951-9447-4841B3BACF2A}
 		{BFBC6D27-79E6-4833-8677-92E99C426176} = {3DBB2CAD-7D51-44D2-8520-971BD20346CB}
+		{6BAA9F92-A81B-4626-9850-948A8CE288E1} = {30BC4A6C-FD4A-41E6-9C63-4264776E8FC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {41215658-7402-4979-9F2A-7EAB3A62E0A2}
