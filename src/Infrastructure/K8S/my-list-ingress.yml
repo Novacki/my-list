@@ -2,11 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-list-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
   labels:
     name: my-list-ingress
 spec:
   rules:
-  - host: identity.api
+  - host: identitytestes1.net
     http:
       paths:
         path: /
@@ -15,4 +17,3 @@ spec:
             name: identity-api-service
             port: 
               number: 80
-              
