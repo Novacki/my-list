@@ -1,4 +1,4 @@
-using Identity.Infrastructure.Data.Contexts.Identity;
+using Identity.infrastructure.Data.Contexts.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
