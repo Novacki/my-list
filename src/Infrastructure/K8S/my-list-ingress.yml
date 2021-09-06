@@ -2,8 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-list-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
   labels:
     name: my-list-ingress
 spec:
@@ -13,6 +11,8 @@ spec:
       paths:
         path: /
         backend:
-          serviceName: identity-api-service
-          servicePort: 80
-
+          service:
+            name: identity-api-service
+            port: 
+              number: 80
+              
