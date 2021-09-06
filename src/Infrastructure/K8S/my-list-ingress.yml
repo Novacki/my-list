@@ -4,6 +4,7 @@ metadata:
   name: my-list-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
   labels:
     name: my-list-ingress
 spec:
@@ -11,7 +12,7 @@ spec:
   - host: identitytestes1.net
     http:
       paths:
-        path: /
+      - path: /
         backend:
           service:
             name: identity-api-service
