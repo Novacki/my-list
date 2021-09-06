@@ -1,7 +1,9 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: my-list-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
   labels:
     name: my-list-ingress
 spec:
@@ -11,16 +13,6 @@ spec:
       paths:
         path: /
         backend:
-          service:
-            name: identity
-            port: 
-              number: 80
-  - host: purchase.api
-    http:
-      paths:
-        path: /
-        backend:
-          service:
-            name: purchase
-            port: 
-              number: 80
+          serviceName: identity
+          servicePort: 80
+
