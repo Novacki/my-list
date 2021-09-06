@@ -8,7 +8,7 @@ metadata:
     name: my-list-ingress
 spec:
   rules:
-  - host: identitytestes1
+  - host: identity.api
     http:
       paths:
       - path: /
