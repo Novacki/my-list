@@ -12,6 +12,7 @@ spec:
       labels:
         app: identity
     spec:
+      hostname: identity
       nodeSelector:
         "beta.kubernetes.io/os": linux
       containers:
