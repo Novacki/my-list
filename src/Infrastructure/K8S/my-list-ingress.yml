@@ -8,12 +8,13 @@ metadata:
     name: my-list-ingress
 spec:
   rules:
-    - http:
-        paths:
-        - path: /identity
-          pathType: Prefix
-          backend:
-            service:
-              name: identity-api-service
-              port: 
-                number: 80
+  - host: identity.api
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: identity-api-service
+            port: 
+              number: 80
