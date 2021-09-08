@@ -93,7 +93,7 @@ jobs:
      - name: Setting Database of the ks8
        uses: Azure/k8s-deploy@v1.4
        with:
-         namespace: ${{ env.AKS_NAMESPACE }}
+        #  namespace: ${{ env.AKS_NAMESPACE }}
          images: mcr.microsoft.com/mssql/server:2017-latest
          manifests: |
              ./src/Infrastructure/K8S/SqlServer/sql-server-deployment.yml
@@ -105,7 +105,7 @@ jobs:
      - name: Setting Application of the ks8
        uses: Azure/k8s-deploy@v1.4
        with:
-         namespace: ${{ env.AKS_NAMESPACE }}
+        #  namespace: ${{ env.AKS_NAMESPACE }}
          manifests: |
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
@@ -116,7 +116,8 @@ jobs:
          kubectl-version: 'latest'
         
      - name: Set Deployment Image
-       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} -n=${{ env.AKS_NAMESPACE }}
+       run: kubectl set image deployment identity identity=${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }} 
+       #-n=${{ env.AKS_NAMESPACE }}
 
   
   deploy-hmg:

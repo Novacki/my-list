@@ -2,15 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-list-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
   labels:
     name: my-list-ingress
 spec:
   rules:
     - http:
         paths:
-        - path: /identity
+        - path: /
           pathType: Prefix
           backend:
             service:
