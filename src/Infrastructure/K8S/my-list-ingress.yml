@@ -15,6 +15,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: identity-api-service
+            name: ./identity/identity-api-service
             port: 
               number: 80
