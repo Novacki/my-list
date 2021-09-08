@@ -109,7 +109,7 @@ jobs:
          manifests: |
              ./src/Infrastructure/K8S/Identity/identity-api-deployment.yml
              ./src/Infrastructure/K8S/Identity/identity-api-service.yml
-             ./src/Infrastructure/K8S/my-list-ingress.yml
+             ./src/Infrastructure/K8S/Identity/my-list-ingress.yml
          images: |
              ${{ env.IMAGE_TAG_BASE }}:v${{ github.run_id }}
              ${{ env.IMAGE_TAG_BASE }}:latest
