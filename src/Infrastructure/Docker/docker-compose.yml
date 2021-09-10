@@ -3,22 +3,30 @@ version: '3.4'
 services:
   #Database
   sqldata:
+    networks:
+      - default
     image: mcr.microsoft.com/mssql/server:2017-latest
 
   #Identity
   identity-api:
+    networks:
+      - default
+    depends_on:
+      - sqldata
     image: ${DOCKER_REGISTRY-}identityapi
     build:
       context: ./../../../
       dockerfile: ./src/Server/Services/Identity/Identity.API/Dockerfile
-    depends_on:
-      - sqldata
 
   #PurchaseList
   purchaseList-api:
     image: ${DOCKER_REGISTRY-}purchaselistapi
+    depends_on:
+      - sqldata
     build:
       context: ./../../../
       dockerfile: ./src/Server/Services/PurchaseList/PurchaseList.API/Dockerfile
-    depends_on:
-      - sqldata
+
+networks: 
+  default:
+    driver: bridge 

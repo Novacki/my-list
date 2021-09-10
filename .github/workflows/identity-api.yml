@@ -46,7 +46,7 @@ jobs:
        push: false
        
   deploy-dev:
-    # if: ${{ github.base_ref == 'develop' }}
+    if: ${{ github.base_ref == 'develop' }}
     runs-on: ubuntu-latest
     environment:
       name: dev

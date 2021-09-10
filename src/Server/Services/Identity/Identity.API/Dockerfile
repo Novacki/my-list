@@ -7,14 +7,18 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
+ENV PATH $PATH:/root/.dotnet/tools
 COPY ["src/Server/Services/Identity/Identity.API/Identity.API.csproj", "src/Server/Services/Identity/Identity.API/"]
 RUN dotnet restore "src/Server/Services/Identity/Identity.API/Identity.API.csproj"
 COPY . .
+
 WORKDIR "/src/src/Server/Services/Identity/Identity.API"
-RUN dotnet build "Identity.API.csproj" -c Release -o /app/build
+RUN dotnet build "Identity.API.csproj" -c Release -o /app/build 
+# && dotnet tool install -g dotnet-ef && dotnet ef database update 
 
 FROM build AS publish
-RUN dotnet publish "Identity.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "Identity.API.csproj" -c Release -o /app/publish 
+RUN dotnet tool install -g dotnet-ef  && dotnet ef database update
 
 FROM base AS final
 WORKDIR /app
