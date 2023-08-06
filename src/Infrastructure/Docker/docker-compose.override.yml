@@ -1,6 +1,11 @@
 version: '3.4'
 
 services:
+  sqldata:
+    env_file: ./Environments/SqlServer/.env
+    ports:
+      - "1433:1433"
+      
   identity-api:
     env_file: ./Environments/Identity/.env
     restart: always
@@ -16,8 +21,3 @@ services:
       - "5580:80"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  sqldata:
-    env_file: ./Environments/SqlServer/.env
-    ports:
-      - "5434:1433"

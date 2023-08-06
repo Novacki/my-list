@@ -1,7 +1,9 @@
 ﻿using Identity.API.Application.Objects.DTO;
+using Identity.API.Application.Settings.Auth;
 using Identity.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -13,16 +15,18 @@ namespace Identity.API.Controllers
     public class AuthController : Controller
     {
         public readonly IIdentityService _identityService;
-        
-        public AuthController(IIdentityService identityService)
+        private readonly AuthSetting _authSetting;
+
+        public AuthController(IIdentityService identityService, IOptions<AuthSetting> authSetting)
         {
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+            _authSetting = authSetting.Value ?? throw new ArgumentNullException(nameof(authSetting));
         }
 
         [HttpPost("new-account")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDTO registerUser)
         {
-            if (registerUser == null) return BadRequest();
+            if (registerUser == null) return BadRequest("XX");
 
             var user = new IdentityUser
             {
@@ -35,7 +39,7 @@ namespace Identity.API.Controllers
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            return Ok();
+            return Ok(_authSetting.GetJwt());
         }
 
         [HttpPost("login")]
@@ -45,7 +49,7 @@ namespace Identity.API.Controllers
 
             var result = await _identityService.SignInAsync(loginUser.Email, loginUser.Password);
 
-            if (!result.Succeeded) return Ok();
+            if (!result.Succeeded) return Ok(_authSetting.GetJwt());
 
             return BadRequest();
         }

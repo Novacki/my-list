@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.API", "Server\Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Domain", "Server\Services\Identity\Identity.Domain\Identity.Domain.csproj", "{CB407B1C-9B79-411C-8BB4-30FF36C0A0FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Infrastructure", "Server\Services\Identity\Identity.infrastructure\Identity.Infrastructure.csproj", "{26AF167A-A44A-4177-A025-10CD83473BDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.infrastructure", "Server\Services\Identity\Identity.infrastructure\Identity.infrastructure.csproj", "{26AF167A-A44A-4177-A025-10CD83473BDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.API", "Server\Services\PurchaseList\PurchaseList.API\PurchaseList.API.csproj", "{E14521BD-C44F-4AED-AF44-ACF5566DD756}"
 EndProject
@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Tests", "Server\Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseList.Tests", "Server\Tests\Unit\PurchaseList\PurchaseList.Tests\PurchaseList.Tests.csproj", "{BFBC6D27-79E6-4833-8677-92E99C426176}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Service", "Server\Services\Identity\Identity.Service\Identity.Service.csproj", "{6BAA9F92-A81B-4626-9850-948A8CE288E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Service", "Server\Services\Identity\Identity.Service\Identity.Service.csproj", "{6BAA9F92-A81B-4626-9850-948A8CE288E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

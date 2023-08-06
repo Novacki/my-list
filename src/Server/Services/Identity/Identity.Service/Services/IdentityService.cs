@@ -9,7 +9,7 @@ namespace Identity.Services.Services
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-
+       
         public IdentityService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));

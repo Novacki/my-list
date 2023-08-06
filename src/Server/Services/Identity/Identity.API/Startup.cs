@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Identity.Services.Interfaces;
 using Identity.Services.Services;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Identity.API.Application.Settings.Auth;
 
 namespace Identity.API
 {
@@ -42,6 +46,8 @@ namespace Identity.API
             }).AddEntityFrameworkStores<IdentityDataContext>()
               .AddDefaultTokenProviders();
 
+            JwtSettings(services);
+               
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +70,34 @@ namespace Identity.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void JwtSettings(IServiceCollection services)
+        {
+            var authSettingSection = Configuration.GetSection(nameof(AuthSetting));
+            services.Configure<AuthSetting>(authSettingSection);
+
+            var authSetting = authSettingSection.Get<AuthSetting>();
+            var key = Encoding.ASCII.GetBytes(authSetting.Secret);
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(token => {
+                token.RequireHttpsMetadata = true;
+                token.SaveToken = true;
+                token.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = authSetting.ValidIn,
+                    ValidIssuer = authSetting.Issuer
+                };
             });
         }
     }

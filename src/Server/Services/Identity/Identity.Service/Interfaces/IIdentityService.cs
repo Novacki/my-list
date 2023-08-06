@@ -8,5 +8,6 @@ namespace Identity.Services.Interfaces
         public Task<IdentityResult> RegisterUserAsync(IdentityUser identityUser);
         public Task<IdentityResult> RegisterUserAsync(IdentityUser identityUser, string password);
         public Task<SignInResult> SignInAsync(string email, string password, bool isPersistent = false, bool lockoutOnFailure = true);
+
     }
 }

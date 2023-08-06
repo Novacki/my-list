@@ -3,12 +3,14 @@ version: '3.4'
 services:
   #Database
   sqldata:
+    container_name: sqldata
     networks:
       - default
     image: mcr.microsoft.com/mssql/server:2017-latest
 
   #Identity
   identity-api:
+    container_name: identity
     networks:
       - default
     depends_on:
@@ -20,6 +22,7 @@ services:
 
   #PurchaseList
   purchaseList-api:
+    container_name: purchase-list
     image: ${DOCKER_REGISTRY-}purchaselistapi
     depends_on:
       - sqldata

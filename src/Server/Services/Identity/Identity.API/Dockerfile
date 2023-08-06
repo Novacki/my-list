@@ -14,13 +14,15 @@ COPY . .
 
 WORKDIR "/src/src/Server/Services/Identity/Identity.API"
 RUN dotnet build "Identity.API.csproj" -c Release -o /app/build 
-# && dotnet tool install -g dotnet-ef && dotnet ef database update 
+RUN dotnet tool install -g dotnet-ef 
+RUN dotnet ef database update
+
 
 FROM build AS publish
 RUN dotnet publish "Identity.API.csproj" -c Release -o /app/publish 
-RUN dotnet tool install -g dotnet-ef  && dotnet ef database update
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Identity.API.dll"]
+
